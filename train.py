@@ -18,6 +18,6 @@ def train_classifier(data_dir):
 
     clf = cv2.face.LBPHFaceRecognizer_create()
     clf.train(faces, ids)
-    clf.write('training_result/classifier.xml')
+    clf.write('train/classifier.xml')
 
 train_classifier('dataset')

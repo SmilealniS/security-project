@@ -1,7 +1,7 @@
 import cv2
 
 faceCascade = cv2.CascadeClassifier("cascade/haarcascade_frontalface_default.xml")
-person_name = ['Unknown', 'Cheep', 'Champ', 'Palm', 'Peak', 'Tonnam']
+person_name = ['Unknown', 'Cheep', 'Champ', 'Peak', 'Tonnam']
 
 def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, clf):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -12,7 +12,7 @@ def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, clf):
         cv2.rectangle(img, (x, y), (x + w, y + h), color, 2)
         id, confidence = clf.predict(gray[y: y + h, x: x + w])
 
-        if confidence > 100:
+        if confidence > 50:
             id = 0
         
     return img, id, round(100 - confidence)
@@ -36,7 +36,7 @@ cap = cv2.VideoCapture(0)
 clf = cv2.face.LBPHFaceRecognizer_create()
 clf.read('train/classifier.xml')
 
-while takes < 50:
+while takes < 60:
     ret, frame = cap.read()
     frame, id, confidence = draw_boundary(frame, faceCascade, 1.1, 10, (0, 255, 0), clf)
     name_results.append([person_name[id], confidence])
