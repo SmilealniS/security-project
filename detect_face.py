@@ -1,7 +1,7 @@
 import cv2
 
 faceCascade = cv2.CascadeClassifier("cascade/haarcascade_frontalface_default.xml")
-person_name = ['Unknown', 'Cheep', 'Champ', 'Peak', 'Tonnam']
+users = ['Unknown', 'Cheep', 'Champ', 'Peak', 'Tonnam']
 
 def draw_boundary(img, classifier, scaleFactor, minNeighbors, color, clf):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -28,23 +28,29 @@ def conclude(name_results):
         most_appeared = list(names_appeared.keys())[frequencies.index(max(frequencies))]
         return most_appeared
 
-takes = 0
 name_results = []
 
-cap = cv2.VideoCapture(0)
+username = input('Please input your username: ')
+if not username in users or username == 'Unknown':
+    print('Invalid username! Try again.')
+else:
+    cap = cv2.VideoCapture(0)
+    clf = cv2.face.LBPHFaceRecognizer_create()
+    clf.read('train/classifier.xml')
 
-clf = cv2.face.LBPHFaceRecognizer_create()
-clf.read('train/classifier.xml')
+    for takes in range(60):
+        ret, frame = cap.read()
+        frame, id, confidence = draw_boundary(frame, faceCascade, 1.1, 10, (0, 255, 0), clf)
+        name_results.append([users[id], confidence])
+        cv2.imshow('frame', frame)
+        takes += 1
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cap.release()
 
-while takes < 60:
-    ret, frame = cap.read()
-    frame, id, confidence = draw_boundary(frame, faceCascade, 1.1, 10, (0, 255, 0), clf)
-    name_results.append([person_name[id], confidence])
-    cv2.imshow('frame', frame)
-    takes += 1
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-print(conclude(name_results))
-cv2.destroyAllWindows()
+    if conclude(name_results) == username:
+        print('Login successful')
+    else:
+        print('Authentication failed. Try again.')
+        
+    cv2.destroyAllWindows()
